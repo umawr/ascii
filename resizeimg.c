@@ -15,6 +15,7 @@ unsigned char * resize_img = NULL;
 int image_generator(int red_count, int green_count, int blue_count) // how does this work
 {
     int lumin = red_count * 0.299 / 4 + green_count * 0.5837 / 4 +blue_count* 0.114 / 4;
+    // int lumin = red_count / 4 + green_count / 4 +blue_count / 4;
     if (lumin >= 0 && lumin < 64)
     {
         *resize_img = 0;
@@ -48,7 +49,7 @@ int color_parser(unsigned char * top_left_pixel, unsigned char * top_rigth_pixel
     unsigned char red, green, blue;
     int red_count = 0, green_count = 0, blue_count = 0; 
     unsigned char *pixel_group[] = {top_left_pixel, top_rigth_pixel, bottom_left_pixel, bottom_right_pixel}; // how does this works
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i <= 3; i++)
     {
         red = pixel_group[i][0];
         red_count += red;
@@ -63,7 +64,7 @@ int color_parser(unsigned char * top_left_pixel, unsigned char * top_rigth_pixel
 int main(void)
 {
     int width, height, channels, color;
-    unsigned char *data = stbi_load("sample_in/applelogo6400x.jpg", &width, &height, &channels, 0);
+    unsigned char *data = stbi_load("sample_in/apple10x.jpg", &width, &height, &channels, 0);
     int new_width = width / 2;
     int new_height = height / 2;
     size_t resize_img_size = new_width * new_height * channels;
@@ -88,18 +89,12 @@ int main(void)
             unsigned char * bottom_left = &data[(width * (y + 1) + x) * channels];
             unsigned char * bottom_right = &data[(width * (y + 1) + (x + 1)) * channels];
 
-            color = color_parser(top_left, top_right, bottom_left, bottom_right);
+            // color = 
+            color_parser(top_left, top_right, bottom_left, bottom_right);
         }
     }
 
-
-    // Force a bright color (e.g., pure red or white) into the first few pixels 
-// to see if your saving/display pipeline works at all:
-resize_img[0] = 255; // R
-resize_img[1] = 255; // G
-resize_img[2] = 255; // B
-
-    stbi_write_jpg("sample_out/apple_resize1_algo3.jpg", new_width, new_height, channels, resize_img, 100);
+    stbi_write_jpg("sample_out/apple_resize_day3.jpg", new_width, new_height, channels, resize_img, 100);
     stbi_image_free(data);
     free(resize_img);
     return 0;
