@@ -1,6 +1,6 @@
 #include<stdio.h>
-#define STB_IMAGE_RESIZE_IMPLEMENTATION
-#include "stb/stb_image_resize2.h"
+// #define STB_IMAGE_RESIZE_IMPLEMENTATION
+// #include "stb/stb_image_resize2.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
@@ -12,9 +12,9 @@
 
 unsigned char * resize_img = NULL;
 
-int image_generator(int red_count, int green_count, int blue_count)
+int image_generator(int red_count, int green_count, int blue_count) // how does this work
 {
-    float lumin = red_count * 0.299 / 4 + green_count * 0.5837 / 4 +blue_count* 0.114 / 4;
+    int lumin = red_count * 0.299 / 4 + green_count * 0.5837 / 4 +blue_count* 0.114 / 4;
     if (lumin >= 0 && lumin < 64)
     {
         *resize_img = 0;
@@ -39,6 +39,7 @@ int image_generator(int red_count, int green_count, int blue_count)
         *(resize_img + 1) = 255;
         *(resize_img + 2) = 255;
     }
+    resize_img = resize_img + 3;    
 }
 
 int color_parser(unsigned char * top_left_pixel, unsigned char * top_rigth_pixel,
@@ -46,7 +47,7 @@ int color_parser(unsigned char * top_left_pixel, unsigned char * top_rigth_pixel
 {
     unsigned char red, green, blue;
     int red_count = 0, green_count = 0, blue_count = 0; 
-    int *pixel_group[] = {top_left_pixel, top_rigth_pixel, bottom_left_pixel, bottom_right_pixel};
+    unsigned char *pixel_group[] = {top_left_pixel, top_rigth_pixel, bottom_left_pixel, bottom_right_pixel}; // how does this works
     for (int i = 0; i < 3; i++)
     {
         red = pixel_group[i][0];
@@ -56,13 +57,13 @@ int color_parser(unsigned char * top_left_pixel, unsigned char * top_rigth_pixel
         blue = pixel_group[i][2];
         blue_count += blue;
     }
-    image_genertor(red_count, green_count, blue_count);
+    image_generator(red_count, green_count, blue_count);
 }
 
 int main(void)
 {
     int width, height, channels, color;
-    unsigned char *data = stbi_load("sample_in/apple6400x.jpg", &width, &height, &channels, 0);
+    unsigned char *data = stbi_load("sample_in/applelogo6400x.jpg", &width, &height, &channels, 0);
     int new_width = width / 2;
     int new_height = height / 2;
     size_t resize_img_size = new_width * new_height * channels;
@@ -92,9 +93,16 @@ int main(void)
     }
 
 
-    stbi_write_jpg("sample_out/apple_resize6.jpg", new_width, new_height, channels, resize_img, 100);
+    // Force a bright color (e.g., pure red or white) into the first few pixels 
+// to see if your saving/display pipeline works at all:
+resize_img[0] = 255; // R
+resize_img[1] = 255; // G
+resize_img[2] = 255; // B
+
+    stbi_write_jpg("sample_out/apple_resize1_algo3.jpg", new_width, new_height, channels, resize_img, 100);
     stbi_image_free(data);
     free(resize_img);
+    return 0;
 }
 
 // 3rd iteration, finally getting somwhere evne though errors, too much reassignment, will cause memmory problems
