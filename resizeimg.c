@@ -32,69 +32,11 @@ int main(void)
 
     printf("Loaded image of width %d pixels, height %d pixels & %d channels\n", width, height, channels);
 
-    for (unsigned char * original_image = img, * resize_image = resize_img;
-        original_image != img + resize_img_size;
-        original_image += channels * 2, resize_image += channels * 1)
-
-    {
-        color = color_converter(original_image, original_image + 1, original_image + 2,
-                                original_image + 3, original_image + 4, original_image + 5,
-                                (original_image + (width * 3)), (original_image + (width) * 3 + 1), (original_image + (width) * 3 + 2),
-                                (original_image + (width * 3) + 3), (original_image + (width) * 3 + 4), (original_image + (width) * 3 + 5));
-        if (color == 0)
-        {
-            *resize_image = 0;
-            *(resize_image + 1) = 0;
-            *(resize_image + 2) = 0;
-        }
-        else if (color == 1)
-        {
-            *resize_image = 85;
-            *(resize_image + 1) = 85;
-            *(resize_image + 2) = 85;
-        }
-        else if (color == 2)
-        {
-            *resize_image = 170;
-            *(resize_image + 1) = 170;
-            *(resize_image + 2) = 170;
-        }
-        else 
-        { 
-            *resize_image = 25;
-            *(resize_image + 1) = 255;
-            *(resize_image + 2) = 255;
-
-        }
-
-        if (channels == 4)
-            exit(EXIT_FAILURE);
-        
-    }
+   
     // int x, y;
     // int index = (width * (y + 0) +(x + 0)) * channels;
 
-for (int y = 0; y <= height; y = y + 2)
-{
- for (int x = 0, x1 = 0; x <= width; x = x + 2) // maybe have to create another var to fix x
- {
-  for (int u = 0 ; u < 4; x++)
-  {
-    u++;
 
-   int index = (width * (y + 0) +(x + 0)) * channels;
-   
-   unsigned char r = data[index];
-   unsigned char g = data[index + 1];
-   unsigned char b = data[index + 2];
-   if (u == 2)
-   {
-     y = y + 1;// check if i can write y++ or x--
-     x = x - 1;
-   }
-  }
- }
-}
     stbi_write_jpg("sample_out/apple_resize6.jpg", new_width, new_height, channels, resize_img, 100);
     stbi_image_free(data);
     free(resize_img);
@@ -121,3 +63,74 @@ int color_converter(unsigned char * red1, unsigned char * green1, unsigned char 
     else if (y >= 192 && y <= 255)
         return 3;
 }
+
+
+// 2nd iteration, too complicated 
+// for (int y = 0; y <= height; y = y + 2)
+// {
+//  for (int x = 0, x1 = 0; x1 * 2 <= width; x = x + 2) // maybe have to create another var to fix x
+//  {
+//     x1 = x1 + 1;
+//   for (int u = 0 ; u < 4; x++)
+//   {
+//     u++;
+
+//    int index = (width * (y + 0) +(x + 0)) * channels;
+   
+//    unsigned char r = data[index];
+//    unsigned char g = data[index + 1];
+//    unsigned char b = data[index + 2];
+//    if (u == 2)
+//    {
+//      y = y + 1;// check if i can write y++ or x--
+//      x = x - 2;
+//    } else if (u == 4)
+//    {
+//     y = 0;
+//     x = 0;
+//    }
+//   }
+//  }
+// }
+
+// 1st iterartion is not working properly
+
+//  for (unsigned char * original_image = img, * resize_image = resize_img;
+//         original_image != img + resize_img_size;
+//         original_image += channels * 2, resize_image += channels * 1)
+
+//     {
+//         color = color_converter(original_image, original_image + 1, original_image + 2,
+//                                 original_image + 3, original_image + 4, original_image + 5,
+//                                 (original_image + (width * 3)), (original_image + (width) * 3 + 1), (original_image + (width) * 3 + 2),
+//                                 (original_image + (width * 3) + 3), (original_image + (width) * 3 + 4), (original_image + (width) * 3 + 5));
+//         if (color == 0)
+//         {
+//             *resize_image = 0;
+//             *(resize_image + 1) = 0;
+//             *(resize_image + 2) = 0;
+//         }
+//         else if (color == 1)
+//         {
+//             *resize_image = 85;
+//             *(resize_image + 1) = 85;
+//             *(resize_image + 2) = 85;
+//         }
+//         else if (color == 2)
+//         {
+//             *resize_image = 170;
+//             *(resize_image + 1) = 170;
+//             *(resize_image + 2) = 170;
+//         }
+//         else 
+//         { 
+//             *resize_image = 25;
+//             *(resize_image + 1) = 255;
+//             *(resize_image + 2) = 255;
+
+//         }
+
+//         if (channels == 4)
+//             exit(EXIT_FAILURE);
+        
+//     }
