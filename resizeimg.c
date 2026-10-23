@@ -2,18 +2,11 @@
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb/stb_image_resize2.h"
 
-
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb/stb_image_write.h"
-
-int color_converter(unsigned char * red1, unsigned char * green1, unsigned char * blue1,
-                    unsigned char * red2, unsigned char * green2, unsigned char * blue2,
-                    unsigned char * red3, unsigned char * green3, unsigned char * blue3,
-                    unsigned char * red4, unsigned char * green4, unsigned char * blue4);
-
 
 int main(void)
 {
@@ -32,9 +25,20 @@ int main(void)
 
     printf("Loaded image of width %d pixels, height %d pixels & %d channels\n", width, height, channels);
 
-   
-    // int x, y;
-    // int index = (width * (y + 0) +(x + 0)) * channels;
+    
+    for (int y = 0; y <= height; y = y + 2)
+    {
+        for (int x = 0; x <= width; x++)
+        {
+            // int index = (width * y + x) * channels;
+            unsigned char * top_left = &data[(width * y + x) * channels];
+            unsigned char * top_right = &data[(width * y + x) * channels + 3];
+            y = y + 1;
+            x = x - 1;
+            unsigned char * bottom_left = &data[(width * y + x) * channels];
+            unsigned char * bottom_right = &data[(width * y + x) * channels + 3];
+        }
+    }
 
 
     stbi_write_jpg("sample_out/apple_resize6.jpg", new_width, new_height, channels, resize_img, 100);
@@ -42,27 +46,6 @@ int main(void)
     free(resize_img);
 }
 
-// yes i write pointers like that ;)
-int color_converter(unsigned char * red1, unsigned char * green1, unsigned char * blue1,
-                    unsigned char * red2, unsigned char * green2, unsigned char * blue2,
-                    unsigned char * red3, unsigned char * green3, unsigned char * blue3,
-                    unsigned char * red4, unsigned char * green4, unsigned char * blue4)
-{
-    int y, y1, y2, y3, y4;
-    y1 = *red1 * 0.299 + *green1 * 0.587 + *blue1 * 0.114;
-    y2 = *red2 * 0.299 + *green2 * 0.587 + *blue2 * 0.114;
-    y3 = *red3 * 0.299 + *green3 * 0.587 + *blue3 * 0.114;
-    y4 = *red4 * 0.299 + *green4 * 0.587 + *blue4 * 0.114;
-    y = (y1 + y2 + y3 + y4)/4;
-    if (y >= 0 && y < 64)
-        return 0;
-    else if ( y >= 64 && y < 128)
-        return 1;
-    else if (y >= 128 && y < 192)
-        return 2;
-    else if (y >= 192 && y <= 255)
-        return 3;
-}
 
 
 // 2nd iteration, too complicated 
@@ -134,3 +117,31 @@ int color_converter(unsigned char * red1, unsigned char * green1, unsigned char 
 //             exit(EXIT_FAILURE);
         
 //     }
+
+// int color_converter(unsigned char * red1, unsigned char * green1, unsigned char * blue1,
+//                     unsigned char * red2, unsigned char * green2, unsigned char * blue2,
+//                     unsigned char * red3, unsigned char * green3, unsigned char * blue3,
+//                     unsigned char * red4, unsigned char * green4, unsigned char * blue4);
+
+// yes i write pointers like that ;)
+// int color_converter(unsigned char * red1, unsigned char * green1, unsigned char * blue1,
+//                     unsigned char * red2, unsigned char * green2, unsigned char * blue2,
+//                     unsigned char * red3, unsigned char * green3, unsigned char * blue3,
+//                     unsigned char * red4, unsigned char * green4, unsigned char * blue4)
+// {
+//     int y, y1, y2, y3, y4;
+//     y1 = *red1 * 0.299 + *green1 * 0.587 + *blue1 * 0.114;
+//     y2 = *red2 * 0.299 + *green2 * 0.587 + *blue2 * 0.114;
+//     y3 = *red3 * 0.299 + *green3 * 0.587 + *blue3 * 0.114;
+//     y4 = *red4 * 0.299 + *green4 * 0.587 + *blue4 * 0.114;
+//     y = (y1 + y2 + y3 + y4)/4;
+//     if (y >= 0 && y < 64)
+//         return 0;
+//     else if ( y >= 64 && y < 128)
+//         return 1;
+//     else if (y >= 128 && y < 192)
+//         return 2;
+//     else if (y >= 192 && y <= 255)
+//         return 3;
+// }
+
