@@ -8,6 +8,57 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb/stb_image_write.h"
 
+// optimizing code, shortening varibale names
+
+unsigned char * resize_img = NULL;
+
+int image_generator(int red_count, int green_count, int blue_count)
+{
+    float lumin = red_count * 0.299 / 4 + green_count * 0.5837 / 4 +blue_count* 0.114 / 4;
+    if (lumin >= 0 && lumin < 64)
+    {
+        *resize_img = 0;
+        *(resize_img + 1) = 0;
+        *(resize_img + 2) = 0;
+    }
+    else if (lumin >= 64 && lumin < 128)
+    {
+        *resize_img = 85;
+        *(resize_img + 1) = 85;
+        *(resize_img + 2) = 85;
+    }
+    else if (lumin >= 128 && lumin < 192)
+    {
+        *resize_img = 170;
+        *(resize_img + 1) = 170;
+        *(resize_img + 2) = 170;
+    }
+    else if (lumin >= 192 && lumin <= 255)
+    {
+        *resize_img = 25;
+        *(resize_img + 1) = 255;
+        *(resize_img + 2) = 255;
+    }
+}
+
+int color_parser(unsigned char * top_left_pixel, unsigned char * top_rigth_pixel,
+                    unsigned char * bottom_left_pixel, unsigned char * bottom_right_pixel)
+{
+    unsigned char red, green, blue;
+    int red_count = 0, green_count = 0, blue_count = 0; 
+    int *pixel_group[] = {top_left_pixel, top_rigth_pixel, bottom_left_pixel, bottom_right_pixel};
+    for (int i = 0; i < 3; i++)
+    {
+        red = pixel_group[i][0];
+        red_count += red;
+        green = pixel_group[i][1];
+        green_count += green; 
+        blue = pixel_group[i][2];
+        blue_count += blue;
+    }
+    image_genertor(red_count, green_count, blue_count);
+}
+
 int main(void)
 {
     int width, height, channels, color;
@@ -15,7 +66,8 @@ int main(void)
     int new_width = width / 2;
     int new_height = height / 2;
     size_t resize_img_size = new_width * new_height * channels;
-    unsigned char * resize_img = malloc(resize_img_size);
+    // unsigned char * resize_img = malloc(resize_img_size);
+    resize_img = malloc(resize_img_size);
 
     if (data == NULL)
     {
@@ -26,17 +78,16 @@ int main(void)
     printf("Loaded image of width %d pixels, height %d pixels & %d channels\n", width, height, channels);
 
     
-    for (int y = 0; y <= height; y = y + 2)
+    for (int y = 0; y < height - 1; y = y + 2)
     {
-        for (int x = 0; x <= width; x++)
-        {
-            // int index = (width * y + x) * channels;
+        for (int x = 0; x < width - 1; x = x + 6)
+        {   
             unsigned char * top_left = &data[(width * y + x) * channels];
-            unsigned char * top_right = &data[(width * y + x) * channels + 3];
-            y = y + 1;
-            x = x - 1;
-            unsigned char * bottom_left = &data[(width * y + x) * channels];
-            unsigned char * bottom_right = &data[(width * y + x) * channels + 3];
+            unsigned char * top_right = &data[(width * y + (x + 1)) * channels];
+            unsigned char * bottom_left = &data[(width * (y + 1) + x) * channels];
+            unsigned char * bottom_right = &data[(width * (y + 1) + (x + 1)) * channels];
+
+            color = color_parser(top_left, top_right, bottom_left, bottom_right);
         }
     }
 
@@ -46,9 +97,28 @@ int main(void)
     free(resize_img);
 }
 
+// 3rd iteration, finally getting somwhere evne though errors, too much reassignment, will cause memmory problems
 
+// for (int y = 0; y <= height; y = y + 2)
+// {   
+//     for (int x = 0, h = 0; h <= width; h = h + 6)
+//     {
+//         x = h;
+//         unsigned char * top_left = &data[(width * y + x) * channels];
+//         x = x + 1;
+//         unsigned char * top_right = &data[(width * y + x) * channels];
+//         y = y + 1;
+//         x = x - 1;
+//         unsigned char * bottom_left = &data[(width * y + x) * channels];
+//         x = x + 1;
+//         unsigned char * bottom_right = &data[(width * y + x) * channels];
+//         y = y - 1;
+//         x  = x - 1;
+//     }
+// }
 
-// 2nd iteration, too complicated 
+// 2nd iteration, too complicated, bs 
+
 // for (int y = 0; y <= height; y = y + 2)
 // {
 //  for (int x = 0, x1 = 0; x1 * 2 <= width; x = x + 2) // maybe have to create another var to fix x
@@ -76,7 +146,7 @@ int main(void)
 //  }
 // }
 
-// 1st iterartion is not working properly
+// 1st iterartion, not working properly, bottom half of output image is glitched out
 
 //  for (unsigned char * original_image = img, * resize_image = resize_img;
 //         original_image != img + resize_img_size;
