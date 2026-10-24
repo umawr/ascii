@@ -11,39 +11,55 @@
 // optimizing code, shortening varibale names
 
 unsigned char * resize_img = NULL;
+int pixel_index = 0;
 
-int image_generator(int red_count, int green_count, int blue_count) // how does this work
+void image_generator(int red_count, int green_count, int blue_count) // how does this work
 {
-    int lumin = red_count * 0.299 / 4 + green_count * 0.5837 / 4 +blue_count* 0.114 / 4;
+    int lumin = (red_count * 0.299 + green_count * 0.5837 + blue_count * 0.114) / 4;
     // int lumin = red_count / 4 + green_count / 4 +blue_count / 4;
     if (lumin >= 0 && lumin < 64)
     {
-        *resize_img = 0;
-        *(resize_img + 1) = 0;
-        *(resize_img + 2) = 0;
+        resize_img[pixel_index + 0] = 0;
+        resize_img[pixel_index + 1] = 0;
+        resize_img[pixel_index + 2] = 0;
     }
     else if (lumin >= 64 && lumin < 128)
     {
-        *resize_img = 85;
-        *(resize_img + 1) = 85;
-        *(resize_img + 2) = 85;
+        resize_img[pixel_index + 0] = 85;
+        resize_img[pixel_index + 1] = 85;
+        resize_img[pixel_index + 2] = 85;
     }
     else if (lumin >= 128 && lumin < 192)
     {
-        *resize_img = 170;
-        *(resize_img + 1) = 170;
-        *(resize_img + 2) = 170;
+        resize_img[pixel_index + 0] = 170;
+        resize_img[pixel_index + 1] = 170;
+        resize_img[pixel_index + 2] = 170;
     }
     else if (lumin >= 192 && lumin <= 255)
     {
-        *resize_img = 25;
-        *(resize_img + 1) = 255;
-        *(resize_img + 2) = 255;
+        resize_img[pixel_index + 0] = 255;
+        resize_img[pixel_index + 1] = 255;
+        resize_img[pixel_index + 2] = 255;
     }
-    resize_img = resize_img + 3;    
+    // resize_img = resize_img + 3;
+    
+    //     if (lumin >= 0 && lumin < 128)
+    // {
+    //     resize_img[pixel_index + 0] = 0;
+    //     resize_img[pixel_index + 1] = 0;
+    //     resize_img[pixel_index + 2] = 0;
+    // }
+    // else if (lumin >= 128 && lumin <= 255)
+    // {
+    //     resize_img[pixel_index + 0] = 255;
+    //     resize_img[pixel_index + 1] = 255;
+    //     resize_img[pixel_index + 2] = 255;
+    // }
+
+    pixel_index = pixel_index + 3;
 }
 
-int color_parser(unsigned char * top_left_pixel, unsigned char * top_rigth_pixel,
+void color_parser(unsigned char * top_left_pixel, unsigned char * top_rigth_pixel,
                     unsigned char * bottom_left_pixel, unsigned char * bottom_right_pixel)
 {
     unsigned char red, green, blue;
@@ -64,7 +80,7 @@ int color_parser(unsigned char * top_left_pixel, unsigned char * top_rigth_pixel
 int main(void)
 {
     int width, height, channels, color;
-    unsigned char *data = stbi_load("sample_in/apple10x.jpg", &width, &height, &channels, 0);
+    unsigned char *data = stbi_load("sample_in/apple100x.jpg", &width, &height, &channels, 0);
     int new_width = width / 2;
     int new_height = height / 2;
     size_t resize_img_size = new_width * new_height * channels;
@@ -79,7 +95,6 @@ int main(void)
 
     printf("Loaded image of width %d pixels, height %d pixels & %d channels\n", width, height, channels);
 
-    
     for (int y = 0; y < height - 1; y = y + 2)
     {
         for (int x = 0; x < width - 1; x = x + 6)
@@ -94,7 +109,9 @@ int main(void)
         }
     }
 
-    stbi_write_jpg("sample_out/apple_resize_day3.jpg", new_width, new_height, channels, resize_img, 100);
+    // stbi_write_jpg("sample_out/apple10x_out.jpg", new_width, new_height, channels, resize_img, 100);
+    // Change this from stbi_write_jpg to stbi_write_png:
+    stbi_write_png("sample_out/apple100x_out.png", new_width, new_height, channels, resize_img, new_width * channels);
     stbi_image_free(data);
     free(resize_img);
     return 0;
