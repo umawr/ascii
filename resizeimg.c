@@ -17,6 +17,9 @@ void image_generator(int red_count, int green_count, int blue_count) // how does
 {
     int lumin = (red_count * 0.299 + green_count * 0.5837 + blue_count * 0.114) / 4;
     // int lumin = red_count / 4 + green_count / 4 +blue_count / 4;
+
+    // for quantization (quad tone)
+    
     // if (lumin >= 0 && lumin < 64)
     // {
     //     resize_img[pixel_index + 0] = 0;
@@ -42,6 +45,8 @@ void image_generator(int red_count, int green_count, int blue_count) // how does
     //     resize_img[pixel_index + 2] = 255;
     // }
     // resize_img = resize_img + 3;
+
+    // for binarization (dual tone)
     
         if (lumin >= 0 && lumin < 128)
     {
