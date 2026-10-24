@@ -17,44 +17,44 @@ void image_generator(int red_count, int green_count, int blue_count) // how does
 {
     int lumin = (red_count * 0.299 + green_count * 0.5837 + blue_count * 0.114) / 4;
     // int lumin = red_count / 4 + green_count / 4 +blue_count / 4;
-    if (lumin >= 0 && lumin < 64)
-    {
-        resize_img[pixel_index + 0] = 0;
-        resize_img[pixel_index + 1] = 0;
-        resize_img[pixel_index + 2] = 0;
-    }
-    else if (lumin >= 64 && lumin < 128)
-    {
-        resize_img[pixel_index + 0] = 85;
-        resize_img[pixel_index + 1] = 85;
-        resize_img[pixel_index + 2] = 85;
-    }
-    else if (lumin >= 128 && lumin < 192)
-    {
-        resize_img[pixel_index + 0] = 170;
-        resize_img[pixel_index + 1] = 170;
-        resize_img[pixel_index + 2] = 170;
-    }
-    else if (lumin >= 192 && lumin <= 255)
-    {
-        resize_img[pixel_index + 0] = 255;
-        resize_img[pixel_index + 1] = 255;
-        resize_img[pixel_index + 2] = 255;
-    }
-    // resize_img = resize_img + 3;
-    
-    //     if (lumin >= 0 && lumin < 128)
+    // if (lumin >= 0 && lumin < 64)
     // {
     //     resize_img[pixel_index + 0] = 0;
     //     resize_img[pixel_index + 1] = 0;
     //     resize_img[pixel_index + 2] = 0;
     // }
-    // else if (lumin >= 128 && lumin <= 255)
+    // else if (lumin >= 64 && lumin < 128)
+    // {
+    //     resize_img[pixel_index + 0] = 85;
+    //     resize_img[pixel_index + 1] = 85;
+    //     resize_img[pixel_index + 2] = 85;
+    // }
+    // else if (lumin >= 128 && lumin < 192)
+    // {
+    //     resize_img[pixel_index + 0] = 170;
+    //     resize_img[pixel_index + 1] = 170;
+    //     resize_img[pixel_index + 2] = 170;
+    // }
+    // else if (lumin >= 192 && lumin <= 255)
     // {
     //     resize_img[pixel_index + 0] = 255;
     //     resize_img[pixel_index + 1] = 255;
     //     resize_img[pixel_index + 2] = 255;
     // }
+    // resize_img = resize_img + 3;
+    
+        if (lumin >= 0 && lumin < 128)
+    {
+        resize_img[pixel_index + 0] = 0;
+        resize_img[pixel_index + 1] = 0;
+        resize_img[pixel_index + 2] = 0;
+    }
+    else if (lumin >= 128 && lumin <= 255)
+    {
+        resize_img[pixel_index + 0] = 255;
+        resize_img[pixel_index + 1] = 255;
+        resize_img[pixel_index + 2] = 255;
+    }
 
     pixel_index = pixel_index + 3;
 }
@@ -80,8 +80,8 @@ void color_parser(unsigned char * top_left_pixel, unsigned char * top_rigth_pixe
 int main(void)
 {
     int width, height, channels, color;
-    unsigned char *data = stbi_load("sample_in/apple100x.jpg", &width, &height, &channels, 0);
-    int new_width = width / 2;
+    unsigned char *data = stbi_load("sample_in/apple86x90.jpg", &width, &height, &channels, 0);
+    int new_width = width / 2;// prev new_width = width / 2
     int new_height = height / 2;
     size_t resize_img_size = new_width * new_height * channels;
     // unsigned char * resize_img = malloc(resize_img_size);
@@ -97,7 +97,7 @@ int main(void)
 
     for (int y = 0; y < height - 1; y = y + 2)
     {
-        for (int x = 0; x < width - 1; x = x + 6)
+        for (int x = 0; x < width - 1; x = x + 2)// x+ 6 to x+2
         {   
             unsigned char * top_left = &data[(width * y + x) * channels];
             unsigned char * top_right = &data[(width * y + (x + 1)) * channels];
@@ -111,7 +111,7 @@ int main(void)
 
     // stbi_write_jpg("sample_out/apple10x_out.jpg", new_width, new_height, channels, resize_img, 100);
     // Change this from stbi_write_jpg to stbi_write_png:
-    stbi_write_png("sample_out/apple100x_out.png", new_width, new_height, channels, resize_img, new_width * channels);
+    stbi_write_png("sample_out/apple86x90_out.png", new_width, new_height, channels, resize_img, new_width * channels);
     stbi_image_free(data);
     free(resize_img);
     return 0;
